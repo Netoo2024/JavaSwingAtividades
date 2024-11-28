@@ -1,0 +1,86 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CalculadoraSimples extends JFrame implements ActionListener {
+    private JTextField tela; // Campo de texto para exibir números e resultados
+    private String operador; // Operação atual (+, -, *, /)
+    private double num1, num2, resultado; // Operandos e resultado
+
+    public CalculadoraSimples() {
+        setTitle("Calculadora"); // Título da janela
+        setSize(300, 400); // Tamanho da janela
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Fechar a janela corretamente
+        setLayout(new BorderLayout()); // Layout principal
+
+        tela = new JTextField();
+        tela.setFont(new Font("Arial", Font.BOLD, 24));
+        tela.setHorizontalAlignment(JTextField.RIGHT);
+        tela.setEditable(false); // Impede edição direta
+        add(tela, BorderLayout.NORTH); // Adiciona ao topo da janela
+
+        JPanel painel = new JPanel();
+        painel.setLayout(new GridLayout(4, 4, 5, 5)); // Layout de grade 4x4
+
+        String[] botoes = {
+                "7", "8", "9", "/",
+                "4", "5", "6", "*",
+                "1", "2", "3", "-",
+                "C", "0", "=", "+"
+        };
+        for (String texto : botoes) {
+            JButton botao = new JButton(texto);
+            botao.setFont(new Font("Arial", Font.BOLD, 18));
+            botao.addActionListener(this); // Adiciona ação ao botão
+            painel.add(botao);
+        }
+
+        add(painel, BorderLayout.CENTER); // Adiciona painel ao centro da janela
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String comando = e.getActionCommand(); // Texto do botão clicado
+
+        if ("0123456789".contains(comando)) { // Números
+            tela.setText(tela.getText() + comando);
+        } else if (comando.equals("C")) { // Limpar
+            tela.setText("");
+            operador = null;
+            num1 = num2 = resultado = 0;
+        } else if ("/*-+".contains(comando)) { // Operadores
+            num1 = Double.parseDouble(tela.getText());
+            operador = comando;
+            tela.setText("");
+        } else if (comando.equals("=")) { // Resultado
+            num2 = Double.parseDouble(tela.getText());
+            switch (operador) {
+                case "+":
+                    resultado = num1 + num2;
+                    break;
+                case "-":
+                    resultado = num1 - num2;
+                    break;
+                case "*":
+                    resultado = num1 * num2;
+                    break;
+                case "/":
+                    if (num2 != 0) {
+                        resultado = num1 / num2;
+                    } else {
+                        tela.setText("Erro: Divisão por zero");
+                        return;
+                    }
+                    break;
+            }
+            tela.setText(String.valueOf(resultado)); // Exibe o resultado
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            CalculadoraSimples calculadora = new CalculadoraSimples();
+            calculadora.setVisible(true);
+        });
+    }
+}
