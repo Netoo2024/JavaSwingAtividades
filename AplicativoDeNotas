@@ -1,0 +1,91 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+public class AplicativoDeNotas extends JFrame implements ActionListener {
+    private JTextField campoNota; 
+    private JTextArea areaNotas;
+    private JLabel resultado;
+    private ArrayList<Double> notas;
+
+    public AplicativoDeNotas() {
+        setTitle("Aplicativo de Notas");
+        setSize(400, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        notas = new ArrayList<>();
+
+        JPanel painelEntrada = new JPanel();
+        painelEntrada.setLayout(new FlowLayout());
+
+        campoNota = new JTextField(10);
+        JButton botaoAdicionar = new JButton("Adicionar Nota");
+        botaoAdicionar.addActionListener(this);
+
+        painelEntrada.add(new JLabel("Nota:"));
+        painelEntrada.add(campoNota);
+        painelEntrada.add(botaoAdicionar);
+
+        add(painelEntrada, BorderLayout.NORTH);
+
+        areaNotas = new JTextArea(10, 30);
+        areaNotas.setEditable(false);
+        add(new JScrollPane(areaNotas), BorderLayout.CENTER);
+
+        JPanel painelInferior = new JPanel();
+        painelInferior.setLayout(new BorderLayout());
+
+        JButton botaoCalcular = new JButton("Calcular Média");
+        botaoCalcular.addActionListener(this);
+
+        resultado = new JLabel("Insira as notas para calcular a média.", JLabel.CENTER);
+        resultado.setFont(new Font("Arial", Font.BOLD, 14));
+
+        painelInferior.add(botaoCalcular, BorderLayout.NORTH);
+        painelInferior.add(resultado, BorderLayout.SOUTH);
+
+        add(painelInferior, BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String comando = e.getActionCommand();
+
+        if (comando.equals("Adicionar Nota")) {
+            try {
+                double nota = Double.parseDouble(campoNota.getText());
+                if (nota < 0 || nota > 10) {
+                    JOptionPane.showMessageDialog(this, "Por favor, insira uma nota entre 0 e 10.", "Erro", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    notas.add(nota);
+                    areaNotas.append("Nota adicionada: " + nota + "\n");
+                    campoNota.setText("");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida. Insira um número.", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (comando.equals("Calcular Média")) {
+            if (notas.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nenhuma nota foi adicionada.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            } else {
+                double soma = 0;
+                for (double nota : notas) {
+                    soma += nota;
+                }
+                double media = soma / notas.size();
+                String status = (media >= 7.0) ? "Aprovado" : "Reprovado";
+                resultado.setText(String.format("Média: %.2f - Status: %s", media, status));
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            AplicativoDeNotas app = new AplicativoDeNotas();
+            app.setVisible(true);
+        });
+    }
+}
