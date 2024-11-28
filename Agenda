@@ -1,0 +1,91 @@
+java
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class AgendaDiaria extends JFrame implements ActionListener {
+    private JTextField campoCompromisso;
+    private JSpinner spinnerDataHora;
+    private JTable tabelaCompromissos;
+    private DefaultTableModel modeloTabela;
+
+    public AgendaDiaria() {
+        setTitle("Agenda Diária");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        JPanel painelEntrada = new JPanel();
+        painelEntrada.setLayout(new GridLayout(1, 3, 10, 10));
+
+        campoCompromisso = new JTextField();
+        painelEntrada.add(new JLabel("Compromisso:"));
+        painelEntrada.add(campoCompromisso);
+
+        SpinnerDateModel model = new SpinnerDateModel();
+        spinnerDataHora = new JSpinner(model);
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(spinnerDataHora, "dd/MM/yyyy HH:mm");
+        spinnerDataHora.setEditor(editor);
+        painelEntrada.add(new JLabel("Data/Hora:"));
+        painelEntrada.add(spinnerDataHora);
+
+        add(painelEntrada, BorderLayout.NORTH);
+
+        JButton botaoAdicionar = new JButton("Adicionar Compromisso");
+        botaoAdicionar.addActionListener(this);
+        add(botaoAdicionar, BorderLayout.CENTER);
+
+        modeloTabela = new DefaultTableModel();
+        modeloTabela.addColumn("Data/Hora");
+        modeloTabela.addColumn("Descrição");
+
+        tabelaCompromissos = new JTable(modeloTabela);
+        JScrollPane scrollPane = new JScrollPane(tabelaCompromissos);
+        add(scrollPane, BorderLayout.SOUTH);
+
+        JButton botaoRemover = new JButton("Remover Compromisso");
+        botaoRemover.addActionListener(this);
+        add(botaoRemover, BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String comando = e.getActionCommand();
+
+        if (comando.equals("Adicionar Compromisso")) {
+            String compromisso = campoCompromisso.getText().trim();
+            Date dataHora = (Date) spinnerDataHora.getValue();
+
+            if (compromisso.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha o campo de compromisso!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            SimpleDateFormat formatoDataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            String dataHoraFormatada = formatoDataHora.format(dataHora);
+
+            modeloTabela.addRow(new Object[]{dataHoraFormatada, compromisso});
+
+            campoCompromisso.setText("");
+        } else if (comando.equals("Remover Compromisso")) {
+            int indiceSelecionado = tabelaCompromissos.getSelectedRow();
+            if (indiceSelecionado != -1) {
+                modeloTabela.removeRow(indiceSelecionado);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecione um compromisso para remover!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            AgendaDiaria app = new AgendaDiaria();
+            app.setVisible(true);
+        });
+    }
+}
