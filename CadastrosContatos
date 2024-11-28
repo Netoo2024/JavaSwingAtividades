@@ -1,0 +1,92 @@
+java
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.DefaultListModel;
+
+public class CadastroDeContatos extends JFrame implements ActionListener {
+    private JTextField campoNome, campoTelefone, campoEmail;
+    private DefaultListModel<String> modeloLista;
+    private JList<String> listaContatos;
+
+    public CadastroDeContatos() {
+        setTitle("Cadastro de Contatos");
+        setSize(400, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        JPanel painelEntrada = new JPanel();
+        painelEntrada.setLayout(new GridLayout(3, 2, 5, 5));
+
+        painelEntrada.add(new JLabel("Nome:"));
+        campoNome = new JTextField();
+        painelEntrada.add(campoNome);
+
+        painelEntrada.add(new JLabel("Telefone:"));
+        campoTelefone = new JTextField();
+        painelEntrada.add(campoTelefone);
+
+        painelEntrada.add(new JLabel("E-mail:"));
+        campoEmail = new JTextField();
+        painelEntrada.add(campoEmail);
+
+        add(painelEntrada, BorderLayout.NORTH);
+
+        modeloLista = new DefaultListModel<>();
+        listaContatos = new JList<>(modeloLista);
+        add(new JScrollPane(listaContatos), BorderLayout.CENTER);
+
+        JPanel painelBotoes = new JPanel();
+        painelBotoes.setLayout(new FlowLayout());
+
+        JButton botaoAdicionar = new JButton("Adicionar Contato");
+        botaoAdicionar.addActionListener(this);
+        painelBotoes.add(botaoAdicionar);
+
+        JButton botaoRemover = new JButton("Remover Contato");
+        botaoRemover.addActionListener(this);
+        painelBotoes.add(botaoRemover);
+
+        add(painelBotoes, BorderLayout.SOUTH); // Adiciona o painel ao rodapé
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String comando = e.getActionCommand();
+
+        if (comando.equals("Adicionar Contato")) {
+            String nome = campoNome.getText().trim();
+            String telefone = campoTelefone.getText().trim();
+            String email = campoEmail.getText().trim();
+
+            if (nome.isEmpty() || telefone.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha todos os campos!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String contato = String.format("Nome: %s, Telefone: %s, E-mail: %s", nome, telefone, email);
+            modeloLista.addElement(contato);
+
+            campoNome.setText("");
+            campoTelefone.setText("");
+            campoEmail.setText("");
+        } else if (comando.equals("Remover Contato")) {
+            // Remove o contato selecionado
+            int indiceSelecionado = listaContatos.getSelectedIndex();
+            if (indiceSelecionado != -1) {
+                modeloLista.remove(indiceSelecionado);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecione um contato para remover!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            CadastroDeContatos app = new CadastroDeContatos();
+            app.setVisible(true);
+        });
+    }
+}
