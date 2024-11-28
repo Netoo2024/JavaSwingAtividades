@@ -1,0 +1,73 @@
+java
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CalculadoraIMC extends JFrame implements ActionListener {
+    private JTextField campoPeso, campoAltura;
+    private JLabel resultadoIMC;
+
+    public CalculadoraIMC() {
+        setTitle("Calculadora de IMC");
+        setSize(350, 250);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new GridLayout(4, 2, 10, 10));
+
+        add(new JLabel("Peso (kg):"));
+        campoPeso = new JTextField();
+        add(campoPeso);
+
+        add(new JLabel("Altura (m):"));
+        campoAltura = new JTextField();
+        add(campoAltura);
+
+        JButton botaoCalcular = new JButton("Calcular IMC");
+        botaoCalcular.addActionListener(this);
+        add(botaoCalcular);
+
+        resultadoIMC = new JLabel("Insira os dados e clique em 'Calcular IMC'.", JLabel.CENTER);
+        resultadoIMC.setFont(new Font("Arial", Font.BOLD, 12));
+        add(resultadoIMC);
+
+        add(new JLabel());
+        add(new JLabel());
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            double peso = Double.parseDouble(campoPeso.getText());
+            double altura = Double.parseDouble(campoAltura.getText());
+
+            if (peso <= 0 || altura <= 0) {
+                JOptionPane.showMessageDialog(this, "Peso e altura devem ser maiores que zero.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            double imc = peso / (altura * altura);
+
+            String categoria;
+            if (imc < 18.5) {
+                categoria = "Baixo Peso";
+            } else if (imc < 24.9) {
+                categoria = "Peso Normal";
+            } else if (imc < 29.9) {
+                categoria = "Sobrepeso";
+            } else {
+                categoria = "Obesidade";
+            }
+
+            resultadoIMC.setText(String.format("IMC: %.2f - Categoria: %s", imc, categoria));
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Insira valores numéricos válidos.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            CalculadoraIMC app = new CalculadoraIMC();
+            app.setVisible(true);
+        });
+    }
+}
